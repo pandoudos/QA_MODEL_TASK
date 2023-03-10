@@ -1,5 +1,6 @@
 import numpy as np
 from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 def fasttext_reader(filename):
     index = 0
@@ -23,7 +24,24 @@ def fasttext_reader(filename):
                 else:
                     continue
 
-    return vocab, vecs      
+    return vocab, vecs    
+
+def tokenizer_preprocessing(df_train, df_val, max_words, max_seq):
+    tokenizer = Tokenizer(num_words=max_words,oov_token='__UNK__')
+    tokenizer.fit_on_texts([x for x in df_train.context])
+    word_index = tokenizer.word_index
+    
+    train_seqs = tokenizer.texts_to_sequences([x for x in df_train.context])
+    val_seqs = tokenizer.texts_to_sequences([x for x in df_val.context])
+    train_data = pad_sequences(train_seqs, maxlen = max_seq, padding = 'post')
+    val_data = pad_sequences(val_seqs, maxlen = max_seq, padding = 'post')
+
+    train_seqs_q = tokenizer.texts_to_sequences([x for x in df_train.question])
+    val_seqs_q = tokenizer.texts_to_sequences([x for x in df_val.question])
+    train_data_q = pad_sequences(train_seqs_q, maxlen = max_seq, padding = 'post')
+    val_data_q = pad_sequences(val_seqs_q, maxlen = max_seq, padding = 'post')
+
+    return train_data, val_data, train_data_q, val_data_q, word_index  
 
 def embedding_matrix_maker(word_index, vocab, vecs, max_words):
     embedding_matrix = np.zeros((max_words+2, vecs.shape[0]))

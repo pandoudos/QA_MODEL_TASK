@@ -7,7 +7,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-def create_BERT_coattention_model(pretrained_path, preprocessor_path):
+def create_BERT_coattention_model(pretrained_path, preprocessor_path, n_classes, lr):
   
   tf.random.set_seed(12)
 
@@ -49,11 +49,11 @@ def create_BERT_coattention_model(pretrained_path, preprocessor_path):
 
   combined_context = Concatenate(axis = 1)([coattention_context_pooled, decoder_outputs])
 
-  output = Dense(5002, activation='softmax')(combined_context)
+  output = Dense(n_classes, activation='softmax')(combined_context)
 
   model = Model(inputs=[context_input, question_input], outputs=output)
 
-  model.compile(optimizer= tf.keras.optimizers.experimental.AdamW(learning_rate=1e-3), 
+  model.compile(optimizer= tf.keras.optimizers.experimental.AdamW(learning_rate=lr), 
               loss = tf.keras.losses.SparseCategoricalCrossentropy(), metrics=['accuracy'])
   
   return model
