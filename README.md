@@ -11,7 +11,7 @@ The data used were the data from the SQuAD dataset found here: https://rajpurkar
 the fasttext embeddings can be downloaded through wget from here https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.vec.gz and must be unzipped to use in code
 
 
-#HOW TO RUN
+# HOW TO RUN
 
 python --train-path=train_path.json --dev-path=dev_path.json --model=model_name_of_choice --model_save_path=model_save_path
 
