@@ -5,7 +5,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 def fasttext_reader(filename):
     index = 0
     vocab = {}
-    with open(filename, 'r', encoding="utf-8", newline='\n',errors='ignore') as f: #Opening the downloaded embedding file
+    with open(filename, 'r', encoding="utf-8", newline='\n', errors='ignore') as f: #Opening the downloaded embedding file
         for l in f:
             line = l.rstrip().split(' ')
             if index == 0: #The first row of the file contains a list of the form [vocab_size, embed_size]

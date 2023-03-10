@@ -5,7 +5,7 @@ import numpy as np
 
 """Taken from: https://www.kaggle.com/code/sanjay11100/squad-stanford-q-a-json-to-pandas-dataframe"""
 
-def squad_json_to_dataframe_train(input_file_path, record_path = ['data','paragraphs','qas','answers'],
+def squad_json_to_dataframe_train(input_file_path, record_path=['data','paragraphs','qas','answers'],
                            verbose = 1):
     """
     input_file_path: path to the squad json file.

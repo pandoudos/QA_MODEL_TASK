@@ -12,10 +12,9 @@ def df_na_handler(df):
 
     df.answer_start = df.answer_start.fillna(5001.0)
 
-def text_preprocessor(dataframe,column_name):
-  dataframe[column_name] = dataframe[column_name].apply(lambda x: x.replace('é','e')) #keeping Beyonce's e
-  dataframe[column_name] = dataframe[column_name].apply(lambda x: x.replace('-',' ')) #splitting hyphenated words, as it seems more sensible
-  #dataframe[column_name] = dataframe[column_name].apply(lambda x: re.sub(r'[^a-zA-Z0-9 ]+', '', x)) #removing non alphanumerical characters except spaces
+def text_preprocessor(dataframe, column_name):
+  dataframe[column_name] = dataframe[column_name].apply(lambda x: x.replace('é', 'e'))
+  dataframe[column_name] = dataframe[column_name].apply(lambda x: x.replace('-', ' ')) #splitting hyphenated words, as it seems more sensible
   dataframe[column_name] = dataframe[column_name].apply(lambda x: x.lower()) #lowercasing
   return dataframe
 
