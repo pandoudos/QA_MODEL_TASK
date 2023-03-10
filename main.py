@@ -32,8 +32,8 @@ def main(train_path, dev_path):
     df_train_1, df_val_1, y_train_1_hot, y_val_1_hot = train_test_split(df_train, y_train, test_size=0.33, random_state=12)
 
     for col in ['question', 'context', 'text']:
-        df_train = text_preprocessor(df_train, col)
-        df_val = text_preprocessor(df_val, col)
+        df_train = text_preprocessor(df_train_1, col)
+        df_val = text_preprocessor(df_val_1, col)
 
     #Downloading Fasttext embeddings and setting them up
 
@@ -88,8 +88,8 @@ def main(train_path, dev_path):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument('--train-path', type=str, dest='train_path', help='Path to training JSON file')
-    parser.add_argument('--dev-path', type=str, dest='dev_path', help='Path to development JSON file')
+    parser.add_argument('--train-path', type=str, dest='train_path', help='Path to training JSON file', default="squad.json")
+    parser.add_argument('--dev-path', type=str, dest='dev_path', help='Path to development JSON file', default="squad_dev.json")
     options = parser.parse_args()
 
     train_path = options.train_path
