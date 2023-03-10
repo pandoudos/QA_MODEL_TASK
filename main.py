@@ -78,8 +78,16 @@ df_train_1 = undersampling(df_train_1, 'answer_start')
 df_train_1 = text_binning(df_train_1, 'answer_start', 'answer_bin', 10)
 df_val_1 = text_binning(df_val_1, 'answer_start', 'answer_bin', 10)
 
+
+#BERT model uses sparse categorical crossentropy so no reason to 1-hot-ify the y
+
 smooth_model_w_BERT = create_BERT_coattention_model(BERT_path, preprocess_path, n_classes=501, lr = 1e-5)
 
 history_smooth = smooth_model_w_BERT.fit([df_train_1.context, df_train_1.question], 
         df_train_1.answer_bin, batch_size = 128,
         epochs=5, validation_data=([df_val_1.context, df_val_1.question], df_val_1.bin))
+
+#Evaluating model
+df_dev = text_binning(df_dev, 'answer_start', 'answer_bin', 10)
+
+smooth_model_w_BERT.evaluate(([df_dev.context, df_dev.question], df_dev.answer_bin))

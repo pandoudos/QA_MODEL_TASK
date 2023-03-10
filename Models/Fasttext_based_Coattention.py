@@ -33,7 +33,7 @@ def create_fasttext_coattention_model(embedding_matrix):
   coattention_context = Attention()([context_encoder, question_attention_factors])
   coattention_question = Attention()([question_encoder, context_attention_factors])
 
-  question_summary_representation = tf.linalg.matmul(coattention_question, context_attention_factors) #???
+  question_summary_representation = tf.linalg.matmul(coattention_question, context_attention_factors) 
 
   decoder_inputs = Concatenate(axis=2)([coattention_context, question_summary_representation])
 
