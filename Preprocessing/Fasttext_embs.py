@@ -1,3 +1,6 @@
+import numpy as np
+from tensorflow.keras.preprocessing.text import Tokenizer
+
 def fasttext_reader(filename):
     index = 0
     vocab = {}
