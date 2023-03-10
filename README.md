@@ -12,6 +12,7 @@ the fasttext embeddings can be downloaded through wget from here https://dl.fbai
 
 
 #HOW TO RUN
+
 python --train-path=train_path.json --dev-path=dev_path.json --model=model_name_of_choice --model_save_path=model_save_path
 
 the model names of choice can be either fasttext big_bert or smooth_bert
