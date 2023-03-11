@@ -14,7 +14,7 @@ from Preprocessing.imbalance_smoothing import *
 from Models.fasttext_based_coattention import *
 from Models.bert_based_coattention import *
 
-def main(train_path, dev_path):
+def main(train_path, dev_path, model_choice, model_save_path):
     """Downloading and basic preprocessing of the dataframe"""
 
     df_train = squad_json_to_dataframe_train(train_path)
@@ -42,7 +42,7 @@ def main(train_path, dev_path):
     BATCH_SIZE = 128
     EPOCHS = 5
 
-    if (options.model_choice == 'fasttext'): 
+    if (model_choice == 'fasttext'): 
     
         #Fasttext embeddings gotten through wget https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.vec.gz
         embeddings_filename = "cc.en.300.vec"
@@ -64,9 +64,9 @@ def main(train_path, dev_path):
         print(model.metrics_names)
         print(results)
         
-        model.save(options.model_save_path)
+        model.save(model_save_path)
 
-    elif (options.model_choice == 'big_bert'):
+    elif (model_choice == 'big_bert'):
 
         #Running Model with BERT sentence embeddings
         preprocess_path = "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3"
@@ -83,9 +83,9 @@ def main(train_path, dev_path):
         print(model_w_BERT.metrics_names)
         print(results)
         
-        model_w_BERT.save(options.model_save_path)
+        model_w_BERT.save(model_save_path)
 
-    elif (options.model_choice == 'smooth_bert'):
+    elif (model_choice == 'smooth_bert'):
 
         preprocess_path = "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3"
         BERT_path = "https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-6_H-128_A-2/2"    
@@ -105,7 +105,7 @@ def main(train_path, dev_path):
                 df_train_1.answer_bin, batch_size=128,
                 epochs=EPOCHS, validation_data=([df_val_1.context, df_val_1.question], df_val_1.answer_bin))
         
-        smooth_model_w_BERT.save(options.model_save_path)
+        smooth_model_w_BERT.save(model_save_path)
 
         #Evaluating model
         df_dev = text_binning(df_dev, 'answer_start', 'answer_bin', 10)
@@ -119,11 +119,13 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('--train-path', type=str, dest='train_path', help='Path to training JSON file', default="squad.json")
     parser.add_argument('--dev-path', type=str, dest='dev_path', help='Path to development JSON file', default="squad_dev.json")
-    parser.add_argument('--model', type=str, dest='model_choice', help='Model to train', choices=["fasttext", "big_bert", "smooth_bert"], default="big_bert")
+    parser.add_argument('--model', type=str, dest='model_choice', help='Model to train', choices=["fasttext", "big_bert", "smooth_bert"], default="smooth_bert")
     parser.add_argument('--model-save-path', type=str, dest='model_save_path', help='Path to save model', default="./q_a_model")
     options = parser.parse_args()
 
     train_path = options.train_path
     dev_path = options.dev_path
+    model_choice = options.model_choice
+    model_save_path = options.model_save_path
 
-    sys.exit(main(train_path, dev_path))
+    sys.exit(main(train_path, dev_path, model_choice, model_save_path))
