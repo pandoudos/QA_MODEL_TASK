@@ -42,12 +42,14 @@ def main(train_path, dev_path):
     BATCH_SIZE = 128
     EPOCHS = 5
 
-    if (options.model_choice == 'fasttext'):    
+    if (options.model_choice == 'fasttext'): 
+    
         #Fasttext embeddings gotten through wget https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.vec.gz
         embeddings_filename = "cc.en.300.vec"
         vocab, vecs = fasttext_reader(embeddings_filename)
 
         train_data, val_data, train_data_q, val_data_q, word_index = tokenizer_preprocessing(df_train, df_val, MAX_WORDS, MAX_SEQ)
+
         embedding_matrix = embedding_matrix_maker(word_index, vocab, vecs, MAX_WORDS)
 
         #Running Model with Fasttext
@@ -57,9 +59,14 @@ def main(train_path, dev_path):
                 y_train_1_hot, batch_size=BATCH_SIZE,
                 epochs=EPOCHS, validation_data=([val_data, val_data_q], y_val_1_hot))
         
+        results = model.evaluate([df_dev.context, df_dev.question], df_dev.answer_start)
+
+        print(model.metrics_names)
+        print(results)
+        
         model.save(options.model_save_path)
 
-    elif (options.model_choice == 'big_bert'):   
+    elif (options.model_choice == 'big_bert'):
 
         #Running Model with BERT sentence embeddings
         preprocess_path = "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3"
@@ -71,11 +78,17 @@ def main(train_path, dev_path):
                 df_train_1.answer_start, batch_size=BATCH_SIZE,
                 epochs=EPOCHS, validation_data=([df_val_1.context, df_val_1.question], df_val_1.answer_start))
         
-        results = model_w_BERT.evaluate(([df_dev.context, df_dev.question], df_dev.answer_start))
+        results = model_w_BERT.evaluate([df_dev.context, df_dev.question], df_dev.answer_start)
+
+        print(model_w_BERT.metrics_names)
+        print(results)
         
         model_w_BERT.save(options.model_save_path)
 
-    elif (options.model_choice == 'smooth_bert'):    
+    elif (options.model_choice == 'smooth_bert'):
+
+        preprocess_path = "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3"
+        BERT_path = "https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-6_H-128_A-2/2"    
 
 
         #Running model after smoothing imbalance and binning text
@@ -90,14 +103,14 @@ def main(train_path, dev_path):
 
         history_smooth = smooth_model_w_BERT.fit([df_train_1.context, df_train_1.question],
                 df_train_1.answer_bin, batch_size=128,
-                epochs=EPOCHS, validation_data=([df_val_1.context, df_val_1.question], df_val_1.bin))
+                epochs=EPOCHS, validation_data=([df_val_1.context, df_val_1.question], df_val_1.answer_bin))
         
         smooth_model_w_BERT.save(options.model_save_path)
 
         #Evaluating model
         df_dev = text_binning(df_dev, 'answer_start', 'answer_bin', 10)
 
-        results = smooth_model_w_BERT.evaluate(([df_dev.context, df_dev.question], df_dev.answer_bin))
+        results = smooth_model_w_BERT.evaluate([df_dev.context, df_dev.question], df_dev.answer_bin)
 
         print(smooth_model_w_BERT.metrics_names)
         print(results)
@@ -106,7 +119,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('--train-path', type=str, dest='train_path', help='Path to training JSON file', default="squad.json")
     parser.add_argument('--dev-path', type=str, dest='dev_path', help='Path to development JSON file', default="squad_dev.json")
-    parser.add_argument('--model', type=str, dest='model_choice', help='Model to train', choices=["fasttext", "big_bert", "smooth_bert"], default="smooth_bert")
+    parser.add_argument('--model', type=str, dest='model_choice', help='Model to train', choices=["fasttext", "big_bert", "smooth_bert"], default="big_bert")
     parser.add_argument('--model-save-path', type=str, dest='model_save_path', help='Path to save model', default="./q_a_model")
     options = parser.parse_args()
 
