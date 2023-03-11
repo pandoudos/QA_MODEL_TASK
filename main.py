@@ -50,10 +50,6 @@ def train(df_train, model_choice, model_save_path):
     EPOCHS = 5
 
     if model_choice == 'fasttext': 
-
-        df_train_1 = df_train_1[:100]
-        df_val_1 = df_val_1[:40]
-
     
         #Fasttext embeddings gotten through wget https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.vec.gz
         embeddings_filename = "cc.en.300.vec"
@@ -118,7 +114,6 @@ def run(df_train, df_test, model_choice, model_save_path):
 
     if model_choice == 'fasttext':
 
-        df_test = df_test[:10]
         MAX_WORDS = 100000
         MAX_SEQ = 2000
 
@@ -178,7 +173,7 @@ if __name__ == "__main__":
     parser.add_argument('--action', type=str, dest='action', help='training or testing options', choices=["train", "run", "train_run"], default="train_run")
     parser.add_argument('--train-path', type=str, dest='train_path', help='Path to training JSON file', default="squad.json")
     parser.add_argument('--dev-path', type=str, dest='dev_path', help='Path to development JSON file', default="squad_dev.json")
-    parser.add_argument('--model', type=str, dest='model_choice', help='Model to train', choices=["fasttext", "big_bert", "smooth_bert"], default="fasttext")
+    parser.add_argument('--model', type=str, dest='model_choice', help='Model to train', choices=["fasttext", "big_bert", "smooth_bert"], default="smooth_bert")
     parser.add_argument('--model_save_path', type=str, dest='model_save_path', help='Path to save model', default="./q_a_model")
     options = parser.parse_args()
 
@@ -188,15 +183,11 @@ if __name__ == "__main__":
     model_choice = options.model_choice
     model_save_path = options.model_save_path
     
-    if options.action=="train":
-        df_train, _ = prepare(train_path, dev_path)
+    df_train, df_test = prepare(train_path, dev_path)
+
+    if options.action in {"train", "train_run"}:
         train(df_train, model_choice, model_save_path)
-    elif options.action=="run":
-        df_train, df_test = prepare(train_path, dev_path)
-        run(df_train, df_test, model_choice, model_save_path)
-    elif options.action=="train_run":
-        df_train, df_test = prepare(train_path, dev_path)
-        train(df_train, model_choice, model_save_path)
+    elif options.action in {"run", "train_run"}:
         run(df_train, df_test, model_choice, model_save_path)
 
 
