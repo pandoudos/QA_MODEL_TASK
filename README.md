@@ -17,7 +17,7 @@ numpy, pandas, tensorflow, tensorflow-text, imblearn, scikit-learn, json
 
 # HOW TO RUN
 
-python --train-path=train_path.json --dev-path=dev_path.json --model=model_name_of_choice --model_save_path=model_save_path
+python --train-path=filepath_to_train_set --dev-path=filepath_to_dev_set --model=model_name_of_choice --model_save_path=path_to_model_file
 
 The model can be one of fasttext, big_bert or smooth_bert
 
