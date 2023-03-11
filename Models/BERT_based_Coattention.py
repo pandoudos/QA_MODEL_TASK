@@ -7,7 +7,9 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
+
 def create_BERT_coattention_model(pretrained_path, preprocessor_path, n_classes, lr):
+
   
   tf.random.set_seed(12)
 
