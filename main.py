@@ -15,7 +15,7 @@ from Models.fasttext_based_coattention import *
 from Models.bert_based_coattention import *
 
 def main(train_path, dev_path, model_choice, model_save_path):
-    """Downloading and basic preprocessing of the dataframe"""
+    """Downloading and basic preprocessing of the dataframe before selecting the model type, then specialized preprocessing and training"""
 
     df_train = squad_json_to_dataframe_train(train_path)
     df_dev =  squad_json_to_dataframe_dev(dev_path)
@@ -23,7 +23,7 @@ def main(train_path, dev_path, model_choice, model_save_path):
     df_train = df_train.drop_duplicates(subset=['question', 'answer_start', 'c_id']).reset_index(drop=True) #removing duplicates
 
     Missmatched_NaN_checker(df_train)
-    df_na_handler(df_train)
+    df_na_handler(df_train) #filling in nan values
     Missmatched_NaN_checker(df_dev)
     df_na_handler(df_dev)
 
@@ -35,8 +35,6 @@ def main(train_path, dev_path, model_choice, model_save_path):
         df_train = text_preprocessor(df_train_1, col)
         df_val = text_preprocessor(df_val_1, col)
 
-    #Downloading Fasttext embeddings and setting them up
-
     MAX_WORDS = 100000
     MAX_SEQ = 2000
     BATCH_SIZE = 128
@@ -47,6 +45,8 @@ def main(train_path, dev_path, model_choice, model_save_path):
         #Fasttext embeddings gotten through wget https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.vec.gz
         embeddings_filename = "cc.en.300.vec"
         vocab, vecs = fasttext_reader(embeddings_filename)
+
+        #Preprocessing data for use with the embedding layer:
 
         train_data, val_data, train_data_q, val_data_q, word_index = tokenizer_preprocessing(df_train, df_val, MAX_WORDS, MAX_SEQ)
 
@@ -74,6 +74,8 @@ def main(train_path, dev_path, model_choice, model_save_path):
 
         model_w_BERT = create_BERT_coattention_model(BERT_path, preprocess_path, n_classes=5002, lr=1e-3)
 
+        #BERT model uses sparse categorical crossentropy so no reason to 1-hot-ify the y
+
         history_w_BERT = model_w_BERT.fit([df_train_1.context, df_train_1.question],
                 df_train_1.answer_start, batch_size=BATCH_SIZE,
                 epochs=EPOCHS, validation_data=([df_val_1.context, df_val_1.question], df_val_1.answer_start))
@@ -98,7 +100,6 @@ def main(train_path, dev_path, model_choice, model_save_path):
         df_val_1 = text_binning(df_val_1, 'answer_start', 'answer_bin', 10)
 
 
-        #BERT model uses sparse categorical crossentropy so no reason to 1-hot-ify the y
         smooth_model_w_BERT = create_BERT_coattention_model(BERT_path, preprocess_path, n_classes=501, lr=1e-5)
 
         history_smooth = smooth_model_w_BERT.fit([df_train_1.context, df_train_1.question],
