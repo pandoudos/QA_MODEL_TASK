@@ -10,6 +10,10 @@ The training data come from the SQuAD dataset found here: https://rajpurkar.gith
 
 The fasttext embeddings can be downloaded via https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.vec.gz Unzipped before use.
 
+# DEPENDECIES
+
+numpy, pandas, tensorflow, tensorflow-text, imblearn, sklearn, json
+
 
 # HOW TO RUN
 
