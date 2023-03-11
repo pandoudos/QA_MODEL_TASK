@@ -12,7 +12,7 @@ The fasttext embeddings can be downloaded via https://dl.fbaipublicfiles.com/fas
 
 # DEPENDECIES
 
-numpy, pandas, tensorflow, tensorflow-text, imblearn, sklearn, json
+numpy, pandas, tensorflow, tensorflow-text, imblearn, scikit-learn, json
 
 
 # HOW TO RUN
